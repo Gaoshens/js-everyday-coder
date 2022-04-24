@@ -18,4 +18,3 @@ function insertionSort(arr) {
 }
 
 console.log(insertionSort(array));
-
