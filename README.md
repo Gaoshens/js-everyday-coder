@@ -1,5 +1,21 @@
 # js-everyday-coder
-
-#### 1.实现 call apply bind 函数
-
-#### 2.实现数组去重
+## 1.实现call函数
+## 2.实现apply函数
+## 3.实现bind函数
+## 4.实现new操作符
+## 5.实现instanceof操作符
+## 6.实现typeof
+## 7.实现find函数
+## 8.实现findIndex函数
+## 9.实现map函数
+## 10.实现filter函数
+## 11.实现reduce函数
+## 12.冒泡排序
+## 13.选择排序
+## 14.插入排序
+## 15.快速排序
+## 16.对象可迭代
+## 17.防抖
+## 18.节流
+## 19.手写promise
+## 20.实现require函数
