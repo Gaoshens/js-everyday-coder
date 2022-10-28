@@ -26,12 +26,16 @@ Module._extensions = {
     const _dirname = path.dirname(module.id);
     compilerFn.call(exports, exports, module, myRequire, _filename, _dirname);
   },
-  '.json'() {},
+  '.json'() {
+    // 读取文件内容
+    const content = fs.readFileSync(module.id, 'utf-8');
+    module.exports = content;
+  },
 };
 
 Module._compiler = ['(function(exports,module,require,_filename,_dirname){', '})'];
 
-Module._getAbsPath = function(id) {
+Module._getResolvePath = function(id) {
   // 补全路径
   const absPath = path.resolve(__dirname, id);
   // 判断文件是否存在
@@ -46,25 +50,26 @@ Module._getAbsPath = function(id) {
       }
     }
   }
-  throw new EvalError(`${id} is not defind`);
+  throw new Error(`${id} is not defind`);
 };
 
 Module._cache = {};
 
 function myRequire(id) {
   // 获取绝对路径
-  const abs = Module._getAbsPath(id);
+  const abs = Module._getResolvePath(id);
   // 读取缓存
-  const cacheModule = Module._cache[id];
+  const cacheModule = Module._cache[abs];
   if (cacheModule) return cacheModule.exports;
   // 创建模块对象
   const module = new Module(abs);
-  // 加载模块
+  // 加载模块并进行缓存
   module.load();
+  Module._cache[abs] = module;
   return module.exports;
 }
 
-const m = myRequire('./01-实现call');
-const c = myRequire('./01-实现call');
+const m = myRequire('./01-实现call'); // 直接读取
+const c = myRequire('./01-实现call'); // 读取缓存
 console.log(m);
 console.log(c);
