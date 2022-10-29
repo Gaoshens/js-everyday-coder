@@ -10,6 +10,8 @@
  * 09. 实现静态方法 resolve reject
  * 10. 实现finally方法
  * 11. 实现all方法
+ * 12. 实现allSelled
+ * 13. 实现race
  */
 
 const PROMISE_PEDDING = 'pedding';
@@ -180,6 +182,39 @@ class MyPromise {
       }
     });
   }
+  static allSelled(promises) {
+    return new MyPromise((resolve, reject) => {
+      let index = 0;
+      const result = [];
+      for (let i = 0; i < promises.length; i++) {
+        const promise = promises[i];
+        MyPromise.resolve(promise)
+          .then(res => {
+            result[i] = { value: res, status: PROMISE_FULFILLED };
+          })
+          .catch(err => {
+            result[i] = { reason: err, status: PROMISE_REJECTED };
+          })
+          .finally(() => {
+            if (++index === promises.length) resolve(result);
+          });
+      }
+    });
+  }
+  static race(promises) {
+    return new MyPromise((resolve, reject) => {
+      for (let i = 0; i < promises.length; i++) {
+        const promsie = promises[i];
+        MyPromise.resolve(promsie)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      }
+    });
+  }
 }
 
 const promise = new MyPromise((resolve, reject) => {
@@ -245,23 +280,61 @@ const promise = new MyPromise((resolve, reject) => {
 //     console.log('finally穿透res', res);
 //   });
 
+// const p1 = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve('p1');
+//   }, 1000);
+// });
+// const p2 = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve('p2');
+//   }, 2000);
+// });
+// const p3 = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     reject('p3');
+//   }, 3000);
+// });
+
+// 测试promise all
+// MyPromise.all([p1, p2, p3])
+//   .then(res => {
+//     console.log(res, 'res');
+//   })
+//   .catch(err => {
+//     console.log(err, 'err');
+//   });
+
+// 测试promise allSelled
+
+// MyPromise.allSelled([p1, p2, p3])
+// .then(res => {
+//   console.log(res, 'res');
+// })
+// .catch(err => {
+//   console.log(err, 'err');
+// });
+
+/**
+ * 测试 race
+ */
 const p1 = new MyPromise((resolve, reject) => {
   setTimeout(() => {
-    resolve('p1');
-  }, 1000);
+    reject('失败1');
+  }, 2000);
 });
 const p2 = new MyPromise((resolve, reject) => {
   setTimeout(() => {
-    resolve('p2');
-  }, 2000);
+    reject('失败2');
+  }, 1000);
 });
 const p3 = new MyPromise((resolve, reject) => {
   setTimeout(() => {
-    resolve('p3');
-  }, 3000);
+    // resolve(MyPromise.reject('失败3'));
+    resolve('成功3');
+  }, 300);
 });
-
-MyPromise.all([p1, p2, p3])
+MyPromise.race([p1, p2, p3])
   .then(res => {
     console.log(res, 'res');
   })
