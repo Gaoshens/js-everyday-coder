@@ -334,10 +334,19 @@ const p3 = new MyPromise((resolve, reject) => {
     resolve('成功3');
   }, 300);
 });
-MyPromise.race([p1, p2, p3])
-  .then(res => {
-    console.log(res, 'res');
-  })
-  .catch(err => {
-    console.log(err, 'err');
-  });
+// MyPromise.race([p1, p2, p3])
+//   .then(res => {
+//     console.log(res, 'res');
+//   })
+//   .catch(err => {
+//     console.log(err, 'err');
+//   });
+
+Promise.any([p1, p2, p3]).then(
+  res => {
+    console.log(res);
+  },
+  err => {
+    console.log(err);
+  }
+);
